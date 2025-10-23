@@ -2,19 +2,30 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"os"
 )
 
-func CountWordsForFile(filename string) (int, error) {
+type CountsResult struct {
+	Lines int
+	Words int
+	Bytes int
+}
+
+func (c CountsResult) String() string {
+	return fmt.Sprintf("lines: %d, words: %d, bytes: %d", c.Lines, c.Words, c.Bytes)
+}
+
+func CountFile(filename string) (CountsResult, error) {
 	file, err := os.Open(filename)
 	defer file.Close()
 
 	if err != nil {
-		return 0, err
+		return CountsResult{}, err
 	}
 
-	return CountWords(file), nil
+	return GetCounts(file), nil
 }
 
 // By making our argument accept any value that conforms to the io.Reader interface
@@ -55,6 +66,24 @@ func CountLines(r io.Reader) int {
 func CountBytes(r io.Reader) int {
 	byteCount, _ := io.Copy(io.Discard, r)
 	return int(byteCount)
+}
+
+func GetCounts(file io.ReadSeeker) CountsResult {
+	const OFFSET_START = 0
+
+	lines := CountLines(file)
+	file.Seek(OFFSET_START, io.SeekStart)
+
+	words := CountWords(file)
+	file.Seek(OFFSET_START, io.SeekStart)
+
+	bytes := CountBytes(file)
+
+	return CountsResult{
+		Lines: lines,
+		Words: words,
+		Bytes: bytes,
+	}
 }
 
 // --------- PREVIOUS IMPL ----------

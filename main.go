@@ -4,35 +4,43 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 )
 
 func main() {
 	log.SetFlags(0)
 
+	totalLines := 0
 	totalWords := 0
+	totalBytes := 0
+
 	filenames := os.Args[1:]
 	didError := false
-	start := time.Now()
 
 	for _, filename := range filenames {
-		wordCount, err := CountWordsForFile(filename)
+		res, err := CountFile(filename)
 
 		if err != nil {
 			didError = true
-			fmt.Fprintln(os.Stderr, "counter: ", err)
+			fmt.Fprintln(os.Stderr, "counter:", err)
 			continue
 		}
 
-		fmt.Println(fmt.Sprintf("%d %s", wordCount, filename))
-		totalWords += wordCount
+		fmt.Println(filename, "-", res)
+
+		totalLines += res.Lines
+		totalWords += res.Words
+		totalBytes += res.Bytes
 	}
 
 	if len(filenames) == 0 {
-		wordCount := CountWords(os.Stdin)
-		fmt.Println(wordCount)
+		res := CountWords(os.Stdin)
+		fmt.Println(res)
 	} else {
-		fmt.Println(fmt.Sprintf("%d total %v seconds", totalWords, time.Since(start)))
+		fmt.Println("total -", CountsResult{
+			Lines: totalLines,
+			Words: totalWords,
+			Bytes: totalBytes,
+		})
 	}
 
 	if didError {
