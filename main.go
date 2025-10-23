@@ -9,15 +9,13 @@ import (
 func main() {
 	log.SetFlags(0)
 
-	totalLines := 0
-	totalWords := 0
-	totalBytes := 0
+	totals := Counts{}
 
 	filenames := os.Args[1:]
 	didError := false
 
 	for _, filename := range filenames {
-		res, err := CountFile(filename)
+		counts, err := CountFile(filename)
 
 		if err != nil {
 			didError = true
@@ -25,22 +23,17 @@ func main() {
 			continue
 		}
 
-		fmt.Println(filename, "-", res)
+		counts.Print(os.Stdout, filename)
 
-		totalLines += res.Lines
-		totalWords += res.Words
-		totalBytes += res.Bytes
+		totals.Lines += counts.Lines
+		totals.Words += counts.Words
+		totals.Bytes += counts.Bytes
 	}
 
 	if len(filenames) == 0 {
-		res := CountWords(os.Stdin)
-		fmt.Println(res)
+		GetCounts(os.Stdin).Print(os.Stdout, "")
 	} else {
-		fmt.Println("total -", CountsResult{
-			Lines: totalLines,
-			Words: totalWords,
-			Bytes: totalBytes,
-		})
+		totals.Print(os.Stdout, "total")
 	}
 
 	if didError {

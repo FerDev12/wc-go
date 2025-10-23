@@ -7,22 +7,32 @@ import (
 	"os"
 )
 
-type CountsResult struct {
+type Counts struct {
 	Lines int
 	Words int
 	Bytes int
 }
 
-func (c CountsResult) String() string {
-	return fmt.Sprintf("lines: %d, words: %d, bytes: %d", c.Lines, c.Words, c.Bytes)
+func (c Counts) String() string {
+	return fmt.Sprintf("%d %d %d", c.Lines, c.Words, c.Bytes)
 }
 
-func CountFile(filename string) (CountsResult, error) {
+func (c Counts) Print(w io.Writer, filename string) {
+	fmt.Fprintf(w, "%s", c)
+
+	if filename != "" {
+		fmt.Fprintf(w, " %s", filename)
+	}
+
+	fmt.Fprintf(w, "\n")
+}
+
+func CountFile(filename string) (Counts, error) {
 	file, err := os.Open(filename)
 	defer file.Close()
 
 	if err != nil {
-		return CountsResult{}, err
+		return Counts{}, err
 	}
 
 	return GetCounts(file), nil
@@ -68,7 +78,7 @@ func CountBytes(r io.Reader) int {
 	return int(byteCount)
 }
 
-func GetCounts(file io.ReadSeeker) CountsResult {
+func GetCounts(file io.ReadSeeker) Counts {
 	const OFFSET_START = 0
 
 	lines := CountLines(file)
@@ -79,7 +89,7 @@ func GetCounts(file io.ReadSeeker) CountsResult {
 
 	bytes := CountBytes(file)
 
-	return CountsResult{
+	return Counts{
 		Lines: lines,
 		Words: words,
 		Bytes: bytes,

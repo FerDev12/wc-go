@@ -1,6 +1,7 @@
 package main_test
 
 import (
+	"bytes"
 	"strings"
 	"testing"
 
@@ -92,9 +93,9 @@ func TestGetCounts(t *testing.T) {
 	testCases := []struct {
 		name  string
 		input string
-		wants counter.CountsResult
+		wants counter.Counts
 	}{
-		{name: "five words", input: "one two three four five\n", wants: counter.CountsResult{
+		{name: "five words", input: "one two three four five\n", wants: counter.Counts{
 			Lines: 1,
 			Words: 5,
 			Bytes: 24,
@@ -106,8 +107,58 @@ func TestGetCounts(t *testing.T) {
 			reader := strings.NewReader(tc.input)
 			got := counter.GetCounts(reader)
 			if got != tc.wants {
-				t.Errorf("got %v, wants %v", got, tc.wants)
+				t.Errorf("got: %v, wants: %v", got, tc.wants)
 			}
 		})
 	}
+}
+
+func TestPrintCounts(t *testing.T) {
+	type inputs struct {
+		counts   counter.Counts
+		filename string
+	}
+
+	testCases := []struct {
+		name  string
+		input inputs
+		wants string
+	}{
+		{
+			name: "five words",
+			input: inputs{
+				counter.Counts{
+					Lines: 1,
+					Words: 5,
+					Bytes: 24,
+				},
+				"words.txt",
+			},
+			wants: "1 5 24 words.txt\n",
+		},
+		{
+			name: "no filename",
+			input: inputs{
+				counts: counter.Counts{
+					Lines: 1,
+					Words: 4,
+					Bytes: 18,
+				},
+				filename: "",
+			},
+			wants: "1 4 18\n",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			buffer := bytes.Buffer{}
+			tc.input.counts.Print(&buffer, tc.input.filename)
+			got := buffer.String()
+			if got != tc.wants {
+				t.Errorf("got: %v, wants: %v", buffer.Bytes(), []byte(tc.wants))
+			}
+		})
+	}
+
 }
