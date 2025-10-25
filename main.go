@@ -24,7 +24,7 @@ func main() {
 
 	flag.BoolVar(&opts.ShowLines, "l", false, "Used to toggle whether or not to show the line count")
 	flag.BoolVar(&opts.ShowWords, "w", false, "Used to toggle whether or not to show the word count")
-	flag.BoolVar(&opts.ShowBytes, "b", false, "Used to toggle whether or not to show the byte count")
+	flag.BoolVar(&opts.ShowBytes, "c", false, "Used to toggle whether or not to show the byte count")
 
 	flag.Parse()
 
