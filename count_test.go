@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	counter "bloom.io/word-counter"
+	counter "bloom.io/github.com/FerDev12/wc-go"
 )
 
 func TestCountWords(t *testing.T) {
