@@ -11,3 +11,37 @@ We have the ability to use various CLI Flags in order to customize the output of
 - `-c`: Count the number of characters (bytes) in the input.
 
 > The flags can be used in any given order.
+
+## Examples
+
+### Single file
+
+```bash
+wc-go words.txt
+```
+
+### Multiple Files
+
+```bash
+wc-go words.txt example.txt
+```
+
+### With flags
+
+```bash
+wc-go -w words.txt
+```
+
+### No files (Stdin)
+
+```bash
+wc-go
+```
+
+```bash
+echo 'foo bar baz' | wc-go
+```
+
+```bash
+wc-go < words.txt
+```
