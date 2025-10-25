@@ -13,12 +13,36 @@ type Counts struct {
 	Bytes int
 }
 
-func (c Counts) String() string {
-	return fmt.Sprintf("%d %d %d", c.Lines, c.Words, c.Bytes)
-}
+func (c Counts) Print(w io.Writer, opts DisplayOptions, filenames ...string) {
+	showAll := opts.ShowLines == opts.ShowWords && opts.ShowWords == opts.ShowBytes
 
-func (c Counts) Print(w io.Writer, filenames ...string) {
-	fmt.Fprintf(w, "%s", c)
+	if showAll {
+		fmt.Fprintf(w, "%d %d %d", c.Lines, c.Words, c.Bytes)
+	} else {
+		for i := range 3 {
+			if i == 0 {
+				if opts.ShowLines {
+					fmt.Fprintf(w, "%d", c.Lines)
+				}
+			}
+			if i == 1 {
+				if opts.ShowWords && opts.ShowLines {
+					fmt.Fprintf(w, " %d", c.Words)
+				}
+				if opts.ShowWords && !opts.ShowLines {
+					fmt.Fprintf(w, "%d", c.Words)
+				}
+			}
+			if i == 2 {
+				if opts.ShowBytes && (opts.ShowLines || opts.ShowWords) {
+					fmt.Fprintf(w, " %d", c.Bytes)
+				}
+				if opts.ShowBytes && !opts.ShowLines && !opts.ShowWords {
+					fmt.Fprintf(w, "%d", c.Bytes)
+				}
+			}
+		}
+	}
 
 	for _, filename := range filenames {
 		fmt.Fprintf(w, " %s", filename)
