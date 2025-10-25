@@ -25,13 +25,11 @@ func main() {
 
 		counts.Print(os.Stdout, filename)
 
-		totals.Lines += counts.Lines
-		totals.Words += counts.Words
-		totals.Bytes += counts.Bytes
+		totals = totals.Add(counts)
 	}
 
 	if len(filenames) == 0 {
-		GetCounts(os.Stdin).Print(os.Stdout, "")
+		GetCounts(os.Stdin).Print(os.Stdout)
 	} else {
 		totals.Print(os.Stdout, "total")
 	}

@@ -116,7 +116,7 @@ func TestGetCounts(t *testing.T) {
 func TestPrintCounts(t *testing.T) {
 	type inputs struct {
 		counts   counter.Counts
-		filename string
+		filename []string
 	}
 
 	testCases := []struct {
@@ -127,12 +127,12 @@ func TestPrintCounts(t *testing.T) {
 		{
 			name: "five words",
 			input: inputs{
-				counter.Counts{
+				counts: counter.Counts{
 					Lines: 1,
 					Words: 5,
 					Bytes: 24,
 				},
-				"words.txt",
+				filename: []string{"words.txt"},
 			},
 			wants: "1 5 24 words.txt\n",
 		},
@@ -144,7 +144,7 @@ func TestPrintCounts(t *testing.T) {
 					Words: 4,
 					Bytes: 18,
 				},
-				filename: "",
+				filename: nil,
 			},
 			wants: "1 4 18\n",
 		},
@@ -153,7 +153,7 @@ func TestPrintCounts(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			buffer := bytes.Buffer{}
-			tc.input.counts.Print(&buffer, tc.input.filename)
+			tc.input.counts.Print(&buffer, tc.input.filename...)
 			got := buffer.String()
 			if got != tc.wants {
 				t.Errorf("got: %v, wants: %v", buffer.Bytes(), []byte(tc.wants))
@@ -161,4 +161,80 @@ func TestPrintCounts(t *testing.T) {
 		})
 	}
 
+}
+
+func TestAddCounts(t *testing.T) {
+	testCases := []struct {
+		name  string
+		input []counter.Counts
+		wants counter.Counts
+	}{
+		{
+			name: "0 count",
+			input: []counter.Counts{
+				{
+					Lines: 0,
+					Words: 0,
+					Bytes: 0,
+				},
+				{
+					Lines: 0,
+					Words: 0,
+					Bytes: 0,
+				},
+			},
+			wants: counter.Counts{
+				Lines: 0,
+				Words: 0,
+				Bytes: 0,
+			},
+		},
+		{
+			name: "simple count",
+			input: []counter.Counts{
+				{
+					Lines: 1,
+					Words: 2,
+					Bytes: 3,
+				},
+			},
+			wants: counter.Counts{
+				Lines: 1,
+				Words: 2,
+				Bytes: 3,
+			},
+		},
+		{
+			name: "multi count",
+			input: []counter.Counts{
+				{
+					Lines: 1,
+					Words: 2,
+					Bytes: 3,
+				},
+				{
+					Lines: 4,
+					Words: 5,
+					Bytes: 6,
+				},
+			},
+			wants: counter.Counts{
+				Lines: 5,
+				Words: 7,
+				Bytes: 9,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			totals := counter.Counts{}
+			for _, input := range tc.input {
+				totals = totals.Add(input)
+			}
+			if totals != tc.wants {
+				t.Errorf("got: %s wants: %s", totals, tc.wants)
+			}
+		})
+	}
 }

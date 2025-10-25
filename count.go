@@ -17,14 +17,21 @@ func (c Counts) String() string {
 	return fmt.Sprintf("%d %d %d", c.Lines, c.Words, c.Bytes)
 }
 
-func (c Counts) Print(w io.Writer, filename string) {
+func (c Counts) Print(w io.Writer, filenames ...string) {
 	fmt.Fprintf(w, "%s", c)
 
-	if filename != "" {
+	for _, filename := range filenames {
 		fmt.Fprintf(w, " %s", filename)
 	}
 
 	fmt.Fprintf(w, "\n")
+}
+
+func (c Counts) Add(other Counts) Counts {
+	c.Lines += other.Lines
+	c.Words += other.Words
+	c.Bytes += other.Bytes
+	return c
 }
 
 func CountFile(filename string) (Counts, error) {
