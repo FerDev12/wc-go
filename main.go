@@ -13,29 +13,8 @@ type DisplayOptions struct {
 	ShowBytes bool
 }
 
-func (do DisplayOptions) String() string {
-	return fmt.Sprintf("-l %t -w %t -b %t", do.ShowLines, do.ShowWords, do.ShowBytes)
-}
-
-func (do DisplayOptions) FormatCounts(counts Counts) string {
-	res := ""
-	for i := range 2 {
-		switch i {
-		case 0:
-			if do.ShowLines {
-				res = fmt.Sprintf("%s %d", res, counts.Lines)
-			}
-		case 1:
-			if do.ShowWords {
-				res = fmt.Sprintf("%s %d", res, counts.Words)
-			}
-		case 2:
-			if do.ShowBytes {
-				res = fmt.Sprintf("%s %d", res, counts.Bytes)
-			}
-		}
-	}
-	return ""
+func (opts DisplayOptions) ShouldShowAll() bool {
+	return opts.ShowLines == opts.ShowWords && opts.ShowWords == opts.ShowBytes
 }
 
 func main() {
@@ -48,8 +27,6 @@ func main() {
 	flag.BoolVar(&opts.ShowBytes, "b", false, "Used to toggle whether or not to show the byte count")
 
 	flag.Parse()
-
-	fmt.Println(opts)
 
 	filenames := flag.Args()
 	didError := false

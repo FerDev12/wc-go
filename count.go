@@ -17,14 +17,15 @@ type Counts struct {
 
 func (c Counts) Print(w io.Writer, opts DisplayOptions, suffixes ...string) {
 	xs := []string{}
+	showAll := opts.ShouldShowAll()
 
-	if opts.ShowLines {
+	if opts.ShowLines || showAll {
 		xs = append(xs, strconv.Itoa(c.Lines))
 	}
-	if opts.ShowWords {
+	if opts.ShowWords || showAll {
 		xs = append(xs, strconv.Itoa(c.Words))
 	}
-	if opts.ShowBytes {
+	if opts.ShowBytes || showAll {
 		xs = append(xs, strconv.Itoa(c.Bytes))
 	}
 
