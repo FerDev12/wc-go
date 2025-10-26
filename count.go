@@ -1,12 +1,9 @@
-package main
+package counter
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"os"
-	"strconv"
-	"strings"
 	"unicode"
 )
 
@@ -14,45 +11,6 @@ type Counts struct {
 	Lines int
 	Words int
 	Bytes int
-}
-
-func (c Counts) Print(w io.Writer, opts DisplayOptions, suffixes ...string) {
-	stats := []string{}
-	showAll := opts.ShouldShowAll()
-
-	if opts.ShowLines || showAll {
-		stats = append(stats, strconv.Itoa(c.Lines))
-		// if opts.ShowHeader {
-		// 	fmt.Fprintf(w, "lines\t")
-		// }
-	}
-	if opts.ShowWords || showAll {
-		stats = append(stats, strconv.Itoa(c.Words))
-		// if opts.ShowHeader {
-		// 	fmt.Fprintf(w, "words\t")
-		// }
-	}
-	if opts.ShowBytes || showAll {
-		stats = append(stats, strconv.Itoa(c.Bytes))
-		// if opts.ShowHeader {
-		// 	fmt.Fprintf(w, "characters")
-		// }
-	}
-
-	// if opts.ShowHeader {
-	// 	fmt.Fprintln(w)
-	// }
-
-	line := strings.Join(stats, "\t") + "\t"
-	suffixStr := strings.Join(suffixes, " ")
-
-	fmt.Fprintf(w, "%s", line)
-
-	if suffixStr != "" {
-		fmt.Fprintf(w, " %s", suffixStr)
-	}
-
-	fmt.Fprintf(w, "\n")
 }
 
 func (c Counts) Add(other Counts) Counts {

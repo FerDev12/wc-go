@@ -3,44 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"text/tabwriter"
+
+	counter "bloom.io/github.com/FerDev12/wc-go"
+	"bloom.io/github.com/FerDev12/wc-go/display"
 )
-
-type DisplayOptions struct {
-	ShowLines  bool
-	ShowWords  bool
-	ShowBytes  bool
-	ShowHeader bool
-}
-
-func (opts DisplayOptions) ShouldShowAll() bool {
-	return opts.ShowLines == opts.ShowWords && opts.ShowWords == opts.ShowBytes
-}
-
-func (opts DisplayOptions) PrintHeader(w io.Writer) {
-	if !opts.ShowHeader {
-		return
-	}
-
-	showAll := opts.ShouldShowAll()
-
-	if opts.ShowLines || showAll {
-		fmt.Fprintf(w, "lines\t")
-	}
-
-	if opts.ShowWords || showAll {
-		fmt.Fprintf(w, "words\t")
-	}
-
-	if opts.ShowBytes || showAll {
-		fmt.Fprintf(w, "characters\t")
-	}
-
-	fmt.Fprintln(w)
-}
 
 const TAB_WIDTH = 8
 const PADDING = 1
@@ -50,7 +19,7 @@ const TAB_FLAG = tabwriter.AlignRight
 func main() {
 	log.SetFlags(0)
 
-	opts := DisplayOptions{}
+	opts := display.Options{}
 
 	flag.BoolVar(&opts.ShowLines, "l", false, "Used to toggle whether or not to show the line count")
 	flag.BoolVar(&opts.ShowWords, "w", false, "Used to toggle whether or not to show the word count")
@@ -64,12 +33,12 @@ func main() {
 
 	filenames := flag.Args()
 	didError := false
-	totals := Counts{}
+	totals := counter.Counts{}
 
 	opts.PrintHeader(wr)
 
 	for _, filename := range filenames {
-		counts, err := CountFile(filename)
+		counts, err := counter.CountFile(filename)
 
 		if err != nil {
 			didError = true
@@ -77,15 +46,16 @@ func main() {
 			continue
 		}
 
-		counts.Print(wr, opts, filename)
+		opts.PrintCounts(wr, counts, filename)
 
 		totals = totals.Add(counts)
 	}
 
 	if len(filenames) == 0 {
-		GetCounts(os.Stdin).Print(wr, opts)
+		counts := counter.GetCounts(os.Stdin)
+		opts.PrintCounts(wr, counts)
 	} else {
-		totals.Print(wr, opts, "total")
+		opts.PrintCounts(wr, totals, "total")
 	}
 
 	wr.Flush()
