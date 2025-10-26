@@ -168,3 +168,110 @@ func TestPrintCounts(t *testing.T) {
 		})
 	}
 }
+
+func TestPrintHeader(t *testing.T) {
+	type inputs struct {
+		options display.Options
+	}
+
+	testCases := []struct {
+		name  string
+		input inputs
+		wants string
+	}{
+		{
+			name: "show all with header",
+			input: inputs{
+				options: display.Options{
+					ShowHeader: true,
+					ShowLines:  true,
+					ShowWords:  true,
+					ShowBytes:  true,
+				},
+			},
+			wants: "lines\twords\tcharacters\t\n",
+		},
+		{
+			name: "show lines with header",
+			input: inputs{
+				options: display.Options{
+					ShowHeader: true,
+					ShowLines:  true,
+					ShowWords:  false,
+					ShowBytes:  false,
+				},
+			},
+			wants: "lines\t\n",
+		},
+		{
+			name: "show words with header",
+			input: inputs{
+				options: display.Options{
+					ShowHeader: true,
+					ShowLines:  false,
+					ShowWords:  true,
+					ShowBytes:  false,
+				},
+			},
+			wants: "words\t\n",
+		},
+		{
+			name: "show bytes with header",
+			input: inputs{
+				options: display.Options{
+					ShowHeader: true,
+					ShowLines:  false,
+					ShowWords:  false,
+					ShowBytes:  true,
+				},
+			},
+			wants: "characters\t\n",
+		},
+		{
+			name: "show lines and words with header",
+			input: inputs{
+				options: display.Options{
+					ShowHeader: true,
+					ShowLines:  true,
+					ShowWords:  true,
+					ShowBytes:  false,
+				},
+			},
+			wants: "lines\twords\t\n",
+		},
+		{
+			name: "show lines and bytes with header",
+			input: inputs{
+				options: display.Options{
+					ShowHeader: true,
+					ShowLines:  true,
+					ShowWords:  false,
+					ShowBytes:  true,
+				},
+			},
+			wants: "lines\tcharacters\t\n",
+		},
+		{
+			name: "show words and bytes with header",
+			input: inputs{
+				options: display.Options{
+					ShowHeader: true,
+					ShowLines:  false,
+					ShowWords:  true,
+					ShowBytes:  true,
+				},
+			},
+			wants: "words\tcharacters\t\n",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			buffer := bytes.Buffer{}
+			tc.input.options.PrintHeader(&buffer)
+			if buffer.String() != tc.wants {
+				t.Errorf("got: %v, wants: %v", buffer.Bytes(), []byte(tc.wants))
+			}
+		})
+	}
+}
