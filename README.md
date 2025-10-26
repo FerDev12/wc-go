@@ -2,8 +2,9 @@
 
 This is a simple word counter CLI app written in Go that replicates (with a few twitches) the functionality of the `wc` command in linux.
 
-We have the ability to use various CLI Flags in order to customize the output of the word counter. These flags include:
+### Display Options
 
+- `--help`: Display help information.
 - `-l`: Count the number of lines in the input.
 - `-w`: Count the number of words in the input.
 - `-c`: Count the number of characters (bytes) in the input.
@@ -43,10 +44,4 @@ echo 'foo bar baz' | wc-go
 
 ```bash
 wc-go < words.txt
-```
-
-### Display Options
-
-```bash
-wc-go --help
 ```
