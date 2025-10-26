@@ -7,6 +7,7 @@ We have the ability to use various CLI Flags in order to customize the output of
 - `-l`: Count the number of lines in the input.
 - `-w`: Count the number of words in the input.
 - `-c`: Count the number of characters (bytes) in the input.
+- `-header`: Display a top level header for each column
 
 > The flags can be used in any given order. If no flag is passed then all values are shown.
 
