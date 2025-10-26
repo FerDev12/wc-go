@@ -10,10 +10,7 @@ import (
 )
 
 type Options struct {
-	showLines  bool
-	showWords  bool
-	showBytes  bool
-	showHeader bool
+	args NewOptionsArgs
 }
 
 type NewOptionsArgs struct {
@@ -25,31 +22,28 @@ type NewOptionsArgs struct {
 
 func NewOptions(args NewOptionsArgs) Options {
 	return Options{
-		showLines:  args.ShowLines,
-		showWords:  args.ShowWords,
-		showBytes:  args.ShowBytes,
-		showHeader: args.ShowHeader,
+		args: args,
 	}
 }
 
 func (opts Options) shouldShowAll() bool {
-	return opts.showLines == opts.showWords && opts.showWords == opts.showBytes
+	return opts.args.ShowLines == opts.args.ShowWords && opts.args.ShowWords == opts.args.ShowBytes
 }
 
 func (opts Options) PrintHeader(w io.Writer) {
-	if !opts.showHeader {
+	if !opts.args.ShowHeader {
 		return
 	}
 
 	showAll := opts.shouldShowAll()
 
-	if opts.showLines || showAll {
+	if opts.args.ShowLines || showAll {
 		fmt.Fprintf(w, "lines\t")
 	}
-	if opts.showWords || showAll {
+	if opts.args.ShowWords || showAll {
 		fmt.Fprintf(w, "words\t")
 	}
-	if opts.showBytes || showAll {
+	if opts.args.ShowBytes || showAll {
 		fmt.Fprintf(w, "characters\t")
 	}
 
@@ -60,13 +54,13 @@ func (opts Options) PrintCounts(w io.Writer, c counter.Counts, suffixes ...strin
 	stats := []string{}
 	showAll := opts.shouldShowAll()
 
-	if opts.showLines || showAll {
+	if opts.args.ShowLines || showAll {
 		stats = append(stats, strconv.Itoa(c.Lines))
 	}
-	if opts.showWords || showAll {
+	if opts.args.ShowWords || showAll {
 		stats = append(stats, strconv.Itoa(c.Words))
 	}
-	if opts.showBytes || showAll {
+	if opts.args.ShowBytes || showAll {
 		stats = append(stats, strconv.Itoa(c.Bytes))
 	}
 
