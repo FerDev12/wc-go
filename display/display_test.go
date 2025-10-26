@@ -29,11 +29,11 @@ func TestPrintCounts(t *testing.T) {
 					Bytes: 24,
 				},
 				filename: []string{"words.txt"},
-				options: display.Options{
+				options: display.NewOptions(display.NewOptionsArgs{
 					ShowLines: true,
 					ShowWords: true,
 					ShowBytes: true,
-				},
+				}),
 			},
 			wants: "1\t5\t24\t words.txt\n",
 		},
@@ -45,11 +45,11 @@ func TestPrintCounts(t *testing.T) {
 					Words: 4,
 					Bytes: 18,
 				},
-				options: display.Options{
+				options: display.NewOptions(display.NewOptionsArgs{
 					ShowLines: true,
 					ShowWords: true,
 					ShowBytes: true,
-				},
+				}),
 			},
 			wants: "1\t4\t18\t\n",
 		},
@@ -62,11 +62,11 @@ func TestPrintCounts(t *testing.T) {
 					Bytes: 24,
 				},
 				filename: []string{"words.txt"},
-				options: display.Options{
+				options: display.NewOptions(display.NewOptionsArgs{
 					ShowLines: true,
 					ShowWords: false,
 					ShowBytes: false,
-				},
+				}),
 			},
 			wants: "1\t words.txt\n",
 		},
@@ -79,11 +79,11 @@ func TestPrintCounts(t *testing.T) {
 					Bytes: 24,
 				},
 				filename: []string{"words.txt"},
-				options: display.Options{
+				options: display.NewOptions(display.NewOptionsArgs{
 					ShowLines: false,
 					ShowWords: true,
 					ShowBytes: false,
-				},
+				}),
 			},
 			wants: "5\t words.txt\n",
 		},
@@ -96,11 +96,11 @@ func TestPrintCounts(t *testing.T) {
 					Bytes: 24,
 				},
 				filename: []string{"words.txt"},
-				options: display.Options{
+				options: display.NewOptions(display.NewOptionsArgs{
 					ShowLines: false,
 					ShowWords: false,
 					ShowBytes: true,
-				},
+				}),
 			},
 			wants: "24\t words.txt\n",
 		},
@@ -113,11 +113,11 @@ func TestPrintCounts(t *testing.T) {
 					Bytes: 24,
 				},
 				filename: []string{"words.txt"},
-				options: display.Options{
+				options: display.NewOptions(display.NewOptionsArgs{
 					ShowLines: true,
 					ShowWords: false,
 					ShowBytes: true,
-				},
+				}),
 			},
 			wants: "1\t24\t words.txt\n",
 		},
@@ -130,11 +130,11 @@ func TestPrintCounts(t *testing.T) {
 					Bytes: 24,
 				},
 				filename: []string{"words.txt"},
-				options: display.Options{
+				options: display.NewOptions(display.NewOptionsArgs{
 					ShowLines: false,
 					ShowWords: true,
 					ShowBytes: true,
-				},
+				}),
 			},
 			wants: "5\t24\t words.txt\n",
 		},
@@ -147,11 +147,11 @@ func TestPrintCounts(t *testing.T) {
 					Bytes: 24,
 				},
 				filename: []string{"words.txt"},
-				options: display.Options{
+				options: display.NewOptions(display.NewOptionsArgs{
 					ShowLines: true,
 					ShowWords: true,
 					ShowBytes: false,
-				},
+				}),
 			},
 			wants: "1\t5\t words.txt\n",
 		},
@@ -182,84 +182,84 @@ func TestPrintHeader(t *testing.T) {
 		{
 			name: "show all with header",
 			input: inputs{
-				options: display.Options{
-					ShowHeader: true,
+				options: display.NewOptions(display.NewOptionsArgs{
 					ShowLines:  true,
 					ShowWords:  true,
 					ShowBytes:  true,
-				},
+					ShowHeader: true,
+				}),
 			},
 			wants: "lines\twords\tcharacters\t\n",
 		},
 		{
 			name: "show lines with header",
 			input: inputs{
-				options: display.Options{
-					ShowHeader: true,
+				options: display.NewOptions(display.NewOptionsArgs{
 					ShowLines:  true,
 					ShowWords:  false,
 					ShowBytes:  false,
-				},
+					ShowHeader: true,
+				}),
 			},
 			wants: "lines\t\n",
 		},
 		{
 			name: "show words with header",
 			input: inputs{
-				options: display.Options{
-					ShowHeader: true,
+				options: display.NewOptions(display.NewOptionsArgs{
 					ShowLines:  false,
 					ShowWords:  true,
 					ShowBytes:  false,
-				},
+					ShowHeader: true,
+				}),
 			},
 			wants: "words\t\n",
 		},
 		{
 			name: "show bytes with header",
 			input: inputs{
-				options: display.Options{
-					ShowHeader: true,
+				options: display.NewOptions(display.NewOptionsArgs{
 					ShowLines:  false,
 					ShowWords:  false,
 					ShowBytes:  true,
-				},
+					ShowHeader: true,
+				}),
 			},
 			wants: "characters\t\n",
 		},
 		{
 			name: "show lines and words with header",
 			input: inputs{
-				options: display.Options{
-					ShowHeader: true,
+				options: display.NewOptions(display.NewOptionsArgs{
 					ShowLines:  true,
 					ShowWords:  true,
 					ShowBytes:  false,
-				},
+					ShowHeader: true,
+				}),
 			},
 			wants: "lines\twords\t\n",
 		},
 		{
 			name: "show lines and bytes with header",
 			input: inputs{
-				options: display.Options{
-					ShowHeader: true,
+				options: display.NewOptions(display.NewOptionsArgs{
 					ShowLines:  true,
 					ShowWords:  false,
 					ShowBytes:  true,
-				},
+					ShowHeader: true,
+				}),
 			},
 			wants: "lines\tcharacters\t\n",
 		},
 		{
 			name: "show words and bytes with header",
 			input: inputs{
-				options: display.Options{
-					ShowHeader: true,
+				options: display.NewOptions(display.NewOptionsArgs{
 					ShowLines:  false,
 					ShowWords:  true,
 					ShowBytes:  true,
-				},
+					ShowHeader: true,
+				}),
 			},
 			wants: "words\tcharacters\t\n",
 		},

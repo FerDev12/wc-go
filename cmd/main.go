@@ -19,14 +19,16 @@ const TAB_FLAG = tabwriter.AlignRight
 func main() {
 	log.SetFlags(0)
 
-	opts := display.Options{}
+	displayOptionsArgs := display.NewOptionsArgs{}
 
-	flag.BoolVar(&opts.ShowLines, "l", false, "Used to toggle whether or not to show the line count")
-	flag.BoolVar(&opts.ShowWords, "w", false, "Used to toggle whether or not to show the word count")
-	flag.BoolVar(&opts.ShowBytes, "c", false, "Used to toggle whether or not to show the byte count")
-	flag.BoolVar(&opts.ShowHeader, "header", false, "Used to toggle whether or not to show the header")
+	flag.BoolVar(&displayOptionsArgs.ShowLines, "l", false, "Used to toggle whether or not to show the line count")
+	flag.BoolVar(&displayOptionsArgs.ShowBytes, "w", false, "Used to toggle whether or not to show the word count")
+	flag.BoolVar(&displayOptionsArgs.ShowBytes, "c", false, "Used to toggle whether or not to show the byte count")
+	flag.BoolVar(&displayOptionsArgs.ShowHeader, "header", false, "Used to toggle whether or not to show the header")
 
 	flag.Parse()
+
+	opts := display.NewOptions(displayOptionsArgs)
 
 	// instantiate tabwriter to provide tabular ouptut and define it's behaviour
 	wr := tabwriter.NewWriter(os.Stdout, 0, TAB_WIDTH, PADDING, PAD_CHAR, TAB_FLAG)
