@@ -17,23 +17,28 @@ type Counts struct {
 }
 
 func (c Counts) Print(w io.Writer, opts DisplayOptions, suffixes ...string) {
-	xs := []string{}
+	stats := []string{}
 	showAll := opts.ShouldShowAll()
 
 	if opts.ShowLines || showAll {
-		xs = append(xs, strconv.Itoa(c.Lines))
+		stats = append(stats, strconv.Itoa(c.Lines))
 	}
 	if opts.ShowWords || showAll {
-		xs = append(xs, strconv.Itoa(c.Words))
+		stats = append(stats, strconv.Itoa(c.Words))
 	}
 	if opts.ShowBytes || showAll {
-		xs = append(xs, strconv.Itoa(c.Bytes))
+		stats = append(stats, strconv.Itoa(c.Bytes))
 	}
 
-	xs = append(xs, suffixes...)
+	line := strings.Join(stats, "\t") + "\t"
+	suffixStr := strings.Join(suffixes, " ")
 
-	line := strings.Join(xs, " ")
 	fmt.Fprintf(w, "%s", line)
+
+	if suffixStr != "" {
+		fmt.Fprintf(w, " %s", suffixStr)
+	}
+
 	fmt.Fprintf(w, "\n")
 }
 
@@ -121,7 +126,6 @@ func GetCounts(r io.Reader) Counts {
 		}
 
 		isInsideWord = !isSpace
-
 	}
 
 	return res

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"text/tabwriter"
 )
 
 type DisplayOptions struct {
@@ -17,6 +18,11 @@ func (opts DisplayOptions) ShouldShowAll() bool {
 	return opts.ShowLines == opts.ShowWords && opts.ShowWords == opts.ShowBytes
 }
 
+const TAB_WIDTH = 8
+const PADDING = 1
+const PAD_CHAR = ' '
+const TAB_FLAG = tabwriter.AlignRight
+
 func main() {
 	log.SetFlags(0)
 
@@ -27,6 +33,9 @@ func main() {
 	flag.BoolVar(&opts.ShowBytes, "c", false, "Used to toggle whether or not to show the byte count")
 
 	flag.Parse()
+
+	// instantiate tabwriter to provide tabular ouptut and define it's behaviour
+	wr := tabwriter.NewWriter(os.Stdout, 0, TAB_WIDTH, PADDING, PAD_CHAR, TAB_FLAG)
 
 	filenames := flag.Args()
 	didError := false
@@ -41,16 +50,18 @@ func main() {
 			continue
 		}
 
-		counts.Print(os.Stdout, opts, filename)
+		counts.Print(wr, opts, filename)
 
 		totals = totals.Add(counts)
 	}
 
 	if len(filenames) == 0 {
-		GetCounts(os.Stdin).Print(os.Stdout, opts)
+		GetCounts(os.Stdin).Print(wr, opts)
 	} else {
-		totals.Print(os.Stdout, opts, "total")
+		totals.Print(wr, opts, "total")
 	}
+
+	wr.Flush()
 
 	if didError {
 		os.Exit(1)

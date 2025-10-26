@@ -140,7 +140,7 @@ func TestPrintCounts(t *testing.T) {
 					ShowBytes: true,
 				},
 			},
-			wants: "1 5 24 words.txt\n",
+			wants: "1\t5\t24\t words.txt\n",
 		},
 		{
 			name: "no filename",
@@ -156,7 +156,7 @@ func TestPrintCounts(t *testing.T) {
 					ShowBytes: true,
 				},
 			},
-			wants: "1 4 18\n",
+			wants: "1\t4\t18\t\n",
 		},
 		{
 			name: "five words show lines",
@@ -173,7 +173,7 @@ func TestPrintCounts(t *testing.T) {
 					ShowBytes: false,
 				},
 			},
-			wants: "1 words.txt\n",
+			wants: "1\t words.txt\n",
 		},
 		{
 			name: "five words show words",
@@ -190,7 +190,7 @@ func TestPrintCounts(t *testing.T) {
 					ShowBytes: false,
 				},
 			},
-			wants: "5 words.txt\n",
+			wants: "5\t words.txt\n",
 		},
 		{
 			name: "five words show bytes",
@@ -207,7 +207,7 @@ func TestPrintCounts(t *testing.T) {
 					ShowBytes: true,
 				},
 			},
-			wants: "24 words.txt\n",
+			wants: "24\t words.txt\n",
 		},
 		{
 			name: "five words show lines and bytes",
@@ -224,7 +224,7 @@ func TestPrintCounts(t *testing.T) {
 					ShowBytes: true,
 				},
 			},
-			wants: "1 24 words.txt\n",
+			wants: "1\t24\t words.txt\n",
 		},
 		{
 			name: "five words show words and bytes",
@@ -241,7 +241,7 @@ func TestPrintCounts(t *testing.T) {
 					ShowBytes: true,
 				},
 			},
-			wants: "5 24 words.txt\n",
+			wants: "5\t24\t words.txt\n",
 		},
 		{
 			name: "five words show lines and words",
@@ -258,7 +258,7 @@ func TestPrintCounts(t *testing.T) {
 					ShowBytes: false,
 				},
 			},
-			wants: "1 5 words.txt\n",
+			wants: "1\t5\t words.txt\n",
 		},
 	}
 
