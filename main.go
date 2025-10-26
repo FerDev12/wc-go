@@ -3,19 +3,43 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"text/tabwriter"
 )
 
 type DisplayOptions struct {
-	ShowLines bool
-	ShowWords bool
-	ShowBytes bool
+	ShowLines  bool
+	ShowWords  bool
+	ShowBytes  bool
+	ShowHeader bool
 }
 
 func (opts DisplayOptions) ShouldShowAll() bool {
 	return opts.ShowLines == opts.ShowWords && opts.ShowWords == opts.ShowBytes
+}
+
+func (opts DisplayOptions) PrintHeader(w io.Writer) {
+	if !opts.ShowHeader {
+		return
+	}
+
+	showAll := opts.ShouldShowAll()
+
+	if opts.ShowLines || showAll {
+		fmt.Fprintf(w, "lines\t")
+	}
+
+	if opts.ShowWords || showAll {
+		fmt.Fprintf(w, "words\t")
+	}
+
+	if opts.ShowBytes || showAll {
+		fmt.Fprintf(w, "characters\t")
+	}
+
+	fmt.Fprintln(w)
 }
 
 const TAB_WIDTH = 8
@@ -31,6 +55,7 @@ func main() {
 	flag.BoolVar(&opts.ShowLines, "l", false, "Used to toggle whether or not to show the line count")
 	flag.BoolVar(&opts.ShowWords, "w", false, "Used to toggle whether or not to show the word count")
 	flag.BoolVar(&opts.ShowBytes, "c", false, "Used to toggle whether or not to show the byte count")
+	flag.BoolVar(&opts.ShowHeader, "header", false, "Used to toggle whether or not to show the header")
 
 	flag.Parse()
 
@@ -40,6 +65,8 @@ func main() {
 	filenames := flag.Args()
 	didError := false
 	totals := Counts{}
+
+	opts.PrintHeader(wr)
 
 	for _, filename := range filenames {
 		counts, err := CountFile(filename)
