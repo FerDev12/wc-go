@@ -48,16 +48,16 @@ func main() {
 			continue
 		}
 
-		opts.PrintCounts(wr, counts, filename)
+		counts.Print(wr, opts, filename)
 
 		totals = totals.Add(counts)
 	}
 
 	if len(filenames) == 0 {
 		counts := counter.GetCounts(os.Stdin)
-		opts.PrintCounts(wr, counts)
+		counts.Print(wr, opts)
 	} else {
-		opts.PrintCounts(wr, totals, "total")
+		totals.Print(wr, opts, "total")
 	}
 
 	wr.Flush()

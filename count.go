@@ -2,21 +2,26 @@ package counter
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"os"
+	"strconv"
+	"strings"
 	"unicode"
+
+	"bloom.io/github.com/FerDev12/wc-go/display"
 )
 
 type Counts struct {
-	Lines int
-	Words int
-	Bytes int
+	lines int
+	words int
+	bytes int
 }
 
 func (c Counts) Add(other Counts) Counts {
-	c.Lines += other.Lines
-	c.Words += other.Words
-	c.Bytes += other.Bytes
+	c.lines += other.lines
+	c.words += other.words
+	c.bytes += other.bytes
 	return c
 }
 
@@ -84,20 +89,45 @@ func GetCounts(r io.Reader) Counts {
 			break
 		}
 
-		res.Bytes += size
+		res.bytes += size
 
 		if r == '\n' {
-			res.Lines++
+			res.lines++
 		}
 
 		isSpace := unicode.IsSpace(r)
 
 		if !isSpace && !isInsideWord {
-			res.Words++
+			res.words++
 		}
 
 		isInsideWord = !isSpace
 	}
 
 	return res
+}
+
+func (c Counts) Print(w io.Writer, opts display.Options, suffixes ...string) {
+	stats := []string{}
+
+	if opts.ShouldShowLines() {
+		stats = append(stats, strconv.Itoa(c.lines))
+	}
+	if opts.ShouldShowWords() {
+		stats = append(stats, strconv.Itoa(c.words))
+	}
+	if opts.ShouldShowBytes() {
+		stats = append(stats, strconv.Itoa(c.bytes))
+	}
+
+	line := strings.Join(stats, "\t") + "\t"
+	suffixStr := strings.Join(suffixes, " ")
+
+	fmt.Fprintf(w, "%s", line)
+
+	if suffixStr != "" {
+		fmt.Fprintf(w, " %s", suffixStr)
+	}
+
+	fmt.Fprintf(w, "\n")
 }
