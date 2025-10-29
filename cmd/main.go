@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 	"text/tabwriter"
 
 	counter "bloom.io/github.com/FerDev12/wc-go"
@@ -39,19 +40,31 @@ func main() {
 
 	opts.PrintHeader(wr)
 
+	wg := sync.WaitGroup{}
+	wg.Add(len(filenames))
+
+	l := sync.Mutex{}
+
 	for _, filename := range filenames {
-		counts, err := counter.CountFile(filename)
+		go func() {
+			defer wg.Done()
 
-		if err != nil {
-			didError = true
-			fmt.Fprintln(os.Stderr, "counter:", err)
-			continue
-		}
+			counts, err := counter.CountFile(filename)
+			if err != nil {
+				didError = true
+				fmt.Fprintln(os.Stderr, "counter:", err)
+				return
+			}
 
-		counts.Print(wr, opts, filename)
+			l.Lock()
+			defer l.Unlock()
 
-		totals = totals.Add(counts)
+			totals = totals.Add(counts)
+			counts.Print(wr, opts, filename)
+		}()
 	}
+
+	wg.Wait()
 
 	if len(filenames) == 0 {
 		counts := counter.GetCounts(os.Stdin)
