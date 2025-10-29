@@ -17,6 +17,11 @@ const PADDING = 1
 const PAD_CHAR = ' '
 const TAB_FLAG = tabwriter.AlignRight
 
+type FilesCountResult struct {
+	counts   counter.Counts
+	filename string
+}
+
 func main() {
 	log.SetFlags(0)
 
@@ -43,7 +48,7 @@ func main() {
 	wg := sync.WaitGroup{}
 	wg.Add(len(filenames))
 
-	l := sync.Mutex{}
+	ch := make(chan FilesCountResult)
 
 	for _, filename := range filenames {
 		go func() {
@@ -56,15 +61,22 @@ func main() {
 				return
 			}
 
-			l.Lock()
-			defer l.Unlock()
-
-			totals = totals.Add(counts)
-			counts.Print(wr, opts, filename)
+			ch <- FilesCountResult{
+				counts:   counts,
+				filename: filename,
+			}
 		}()
 	}
 
-	wg.Wait()
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+
+	for res := range ch {
+		totals = totals.Add(res.counts)
+		res.counts.Print(wr, opts, res.filename)
+	}
 
 	if len(filenames) == 0 {
 		counts := counter.GetCounts(os.Stdin)
