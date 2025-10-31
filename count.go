@@ -13,9 +13,9 @@ import (
 )
 
 type Counts struct {
-	lines int
-	words int
-	bytes int
+	lines uint
+	words uint
+	bytes uint
 }
 
 func (c Counts) Add(other Counts) Counts {
@@ -38,8 +38,8 @@ func CountFile(filename string) (Counts, error) {
 
 // By making our argument accept any value that conforms to the io.Reader interface
 // we are able to accept various data types such as files or a slice of bytes
-func CountWords(data io.Reader) int {
-	wordCount := 0
+func CountWords(data io.Reader) uint {
+	wordCount := uint(0)
 
 	// Create scanner
 	scanner := bufio.NewScanner(data)
@@ -53,8 +53,8 @@ func CountWords(data io.Reader) int {
 	return wordCount
 }
 
-func CountLines(r io.Reader) int {
-	linesCount := 0
+func CountLines(r io.Reader) uint {
+	linesCount := uint(0)
 
 	reader := bufio.NewReader(r)
 
@@ -71,12 +71,51 @@ func CountLines(r io.Reader) int {
 	return linesCount
 }
 
-func CountBytes(r io.Reader) int {
+func CountBytes(r io.Reader) uint {
 	byteCount, _ := io.Copy(io.Discard, r)
-	return int(byteCount)
+	return uint(byteCount)
 }
 
 func GetCounts(r io.Reader) Counts {
+	linesReader, linesWriter := io.Pipe()
+	wordsReader, wordsWriter := io.Pipe()
+	bytesReader, bytesWriter := io.Pipe()
+
+	w := io.MultiWriter(linesWriter, wordsWriter, bytesWriter)
+
+	linesChan := make(chan uint)
+	wordsChan := make(chan uint)
+	bytesChan := make(chan uint)
+
+	go func() {
+		defer close(linesChan)
+		linesChan <- CountLines(linesReader)
+	}()
+
+	go func() {
+		defer close(wordsChan)
+		wordsChan <- CountWords(wordsReader)
+	}()
+
+	go func() {
+		defer close(bytesChan)
+		bytesChan <- CountBytes(bytesReader)
+	}()
+
+	io.Copy(w, r)
+
+	linesWriter.Close()
+	wordsWriter.Close()
+	bytesWriter.Close()
+
+	return Counts{
+		<-linesChan,
+		<-wordsChan,
+		<-bytesChan,
+	}
+}
+
+func GetCountsSinglePass(r io.Reader) Counts {
 	res := Counts{}
 
 	isInsideWord := false
@@ -89,7 +128,7 @@ func GetCounts(r io.Reader) Counts {
 			break
 		}
 
-		res.bytes += size
+		res.bytes += uint(size)
 
 		if r == '\n' {
 			res.lines++
@@ -111,13 +150,13 @@ func (c Counts) Print(w io.Writer, opts display.Options, suffixes ...string) {
 	stats := []string{}
 
 	if opts.ShouldShowLines() {
-		stats = append(stats, strconv.Itoa(c.lines))
+		stats = append(stats, strconv.Itoa(int(c.lines)))
 	}
 	if opts.ShouldShowWords() {
-		stats = append(stats, strconv.Itoa(c.words))
+		stats = append(stats, strconv.Itoa(int(c.words)))
 	}
 	if opts.ShouldShowBytes() {
-		stats = append(stats, strconv.Itoa(c.bytes))
+		stats = append(stats, strconv.Itoa(int(c.bytes)))
 	}
 
 	line := strings.Join(stats, "\t") + "\t"
