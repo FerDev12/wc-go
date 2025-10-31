@@ -76,7 +76,7 @@ func CountBytes(r io.Reader) uint {
 	return uint(byteCount)
 }
 
-func GetCounts(r io.Reader) Counts {
+func getCountsConcurrent(r io.Reader) Counts {
 	linesReader, linesWriter := io.Pipe()
 	wordsReader, wordsWriter := io.Pipe()
 	bytesReader, bytesWriter := io.Pipe()
@@ -115,7 +115,7 @@ func GetCounts(r io.Reader) Counts {
 	}
 }
 
-func GetCountsSinglePass(r io.Reader) Counts {
+func getCountsSinglePass(r io.Reader) Counts {
 	res := Counts{}
 
 	isInsideWord := false
@@ -144,6 +144,10 @@ func GetCountsSinglePass(r io.Reader) Counts {
 	}
 
 	return res
+}
+
+func GetCounts(r io.Reader) Counts {
+	return getCountsSinglePass(r)
 }
 
 func (c Counts) Print(w io.Writer, opts display.Options, suffixes ...string) {

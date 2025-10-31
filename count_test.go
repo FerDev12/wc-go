@@ -12,7 +12,7 @@ func TestCountWords(t *testing.T) {
 	var testCases = []struct {
 		name  string
 		input string
-		wants int
+		wants uint
 	}{
 		{name: "five words", input: "one two three four five", wants: 5},
 		{name: "empty string", input: "", wants: 0},
@@ -42,7 +42,7 @@ func TestCountLines(t *testing.T) {
 	testCases := []struct {
 		name  string
 		input string
-		wants int
+		wants uint
 	}{
 		{name: "simple five words, 1 new Line", input: "one two three four five\n", wants: 1},
 		{name: "empty file", input: "", wants: 0},
@@ -67,7 +67,7 @@ func TestCountBytes(t *testing.T) {
 	testCases := []struct {
 		name  string
 		input string
-		wants int
+		wants uint
 	}{
 		{name: "empty string", input: "", wants: 0},
 		{name: "single character string", input: "a", wants: 1},
@@ -347,5 +347,31 @@ func TestPrintCounts(t *testing.T) {
 				t.Errorf("got: %v, wants: %v", buffer.Bytes(), []byte(tc.wants))
 			}
 		})
+	}
+}
+
+var benchData = []string{
+	"this is a test data string that runs across multiple lines.",
+	"one two three four five six seven eight",
+	"this is a weird string.",
+}
+
+func BenchmarkGetCounts(b *testing.B) {
+	i := 0
+	for b.Loop() {
+		data := benchData[i%len(benchData)]
+		r := strings.NewReader(data)
+		getCountsConcurrent(r)
+		i++
+	}
+}
+
+func BenchmarkGetCountsSinglePass(b *testing.B) {
+	i := 0
+	for b.Loop() {
+		data := benchData[i%len(benchData)]
+		r := strings.NewReader(data)
+		getCountsSinglePass(r)
+		i++
 	}
 }
