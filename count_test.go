@@ -95,8 +95,71 @@ func TestGetCounts(t *testing.T) {
 		input string
 		wants Counts
 	}{
-		{name: "five words", input: "one two three four five\n", wants: Counts{
+		{
+			name:  "five words",
+			input: "one two three four five\n",
+			wants: Counts{
+				lines: 1,
+				words: 5,
+				bytes: 24,
+			}},
+		{name: "empty string", input: "", wants: Counts{
+			lines: 0,
+			words: 0,
+			bytes: 0,
+		}},
+		{name: "single space", input: " ", wants: Counts{
+			lines: 0,
+			words: 0,
+			bytes: 1,
+		}},
+		{name: "new line", input: "one\ntwo", wants: Counts{
 			lines: 1,
+			words: 2,
+			bytes: 7,
+		}},
+		{name: "multiple spaces", input: "one   two", wants: Counts{
+			lines: 0,
+			words: 2,
+			bytes: 9,
+		}},
+		{name: "prefixed multiple spaces", input: "   one two\n", wants: Counts{
+			lines: 1,
+			words: 2,
+			bytes: 11,
+		}},
+		{name: "suffixed multiple spaces", input: "one two   \n", wants: Counts{
+			lines: 1,
+			words: 2,
+			bytes: 11,
+		}},
+		{name: "tab characters", input: "	one two		three\n", wants: Counts{
+			lines: 1,
+			words: 3,
+			bytes: 16,
+		}},
+		{name: "utf8 characters", input: "one two three four five six", wants: Counts{
+			lines: 0,
+			words: 6,
+			bytes: 37,
+		}},
+		{name: "unicode characters", input: "one two thrРee four five", wants: Counts{
+			lines: 0,
+			words: 5,
+			bytes: 25,
+		}},
+		{name: "no new line at end", input: "one two three four five\n six", wants: Counts{
+			lines: 1,
+			words: 6,
+			bytes: 28,
+		}},
+		{name: "multi newline string", input: "\n\n\n\n", wants: Counts{
+			lines: 4,
+			words: 0,
+			bytes: 4,
+		}},
+		{name: "multi word and newline string", input: "one\ntwo\nthree\nfour\nfive\n", wants: Counts{
+			lines: 5,
 			words: 5,
 			bytes: 24,
 		}},
