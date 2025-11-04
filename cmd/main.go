@@ -30,7 +30,7 @@ func main() {
 	displayOptionsArgs := display.NewOptionsArgs{}
 
 	flag.BoolVar(&displayOptionsArgs.ShowLines, "l", false, "Used to toggle whether or not to show the line count")
-	flag.BoolVar(&displayOptionsArgs.ShowBytes, "w", false, "Used to toggle whether or not to show the word count")
+	flag.BoolVar(&displayOptionsArgs.ShowWords, "w", false, "Used to toggle whether or not to show the word count")
 	flag.BoolVar(&displayOptionsArgs.ShowBytes, "c", false, "Used to toggle whether or not to show the byte count")
 	flag.BoolVar(&displayOptionsArgs.ShowHeader, "header", false, "Used to toggle whether or not to show the header")
 

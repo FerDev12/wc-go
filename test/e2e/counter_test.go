@@ -106,3 +106,131 @@ func TestNonExistingFile(t *testing.T) {
 		t.Errorf("stdout is not correct:\ngot: %s\nwants: %s", gotStdout, wantsStdout)
 	}
 }
+
+func TestFlags(t *testing.T) {
+
+	dname, err := os.MkdirTemp("", "flags")
+	if err != nil {
+		t.Fatal("failed to create temp directory:", err)
+	}
+	defer os.RemoveAll(dname)
+
+	file, err := createFile(dname, "one two three\nfour five six\n")
+	if err != nil {
+		t.Fatal("failed to create temp file:", err)
+	}
+
+	type inputs struct {
+		flags   []string
+		content string
+	}
+
+	testCases := []struct {
+		name  string
+		input inputs
+		wants string
+	}{
+		{
+			name: "-l (line) flag",
+			input: inputs{
+				flags:   []string{"-l"},
+				content: "one two three\nfour five six\n",
+			},
+			wants: fmt.Sprintf(`    2 %s
+    2 total
+`, file.Name()),
+		},
+		{
+			name: "-w (word) flag",
+			input: inputs{
+				flags:   []string{"-w"},
+				content: "one two three\nfour five six\n",
+			},
+			wants: fmt.Sprintf(`    6 %s
+    6 total
+`, file.Name()),
+		},
+		{
+			name: "-c (bytes) flag",
+			input: inputs{
+				flags:   []string{"-c"},
+				content: "one two three\nfour five six\n",
+			},
+			wants: fmt.Sprintf(`    28 %s
+    28 total
+`, file.Name()),
+		},
+		{
+			name: "-l -w (line and word) flag",
+			input: inputs{
+				flags:   []string{"-l", "-w"},
+				content: "one two three\nfour five six\n",
+			},
+			wants: fmt.Sprintf(`    2    6 %s
+    2    6 total
+`, file.Name()),
+		},
+		{
+			name: "-l -c (line and byte) flag",
+			input: inputs{
+				flags:   []string{"-l", "-c"},
+				content: "one two three\nfour five six\n",
+			},
+			wants: fmt.Sprintf(`    2    28 %s
+    2    28 total
+`, file.Name()),
+		},
+		{
+			name: "-w -c (word and byte) flag",
+			input: inputs{
+				flags:   []string{"-w", "-c"},
+				content: "one two three\nfour five six\n",
+			},
+			wants: fmt.Sprintf(`    6    28 %s
+    6    28 total
+`, file.Name()),
+		},
+		{
+			name: "all flags",
+			input: inputs{
+				flags:   []string{"-l", "-w", "-c"},
+				content: "one two three\nfour five six\n",
+			},
+			wants: fmt.Sprintf(`    2    6    28 %s
+    2    6    28 total
+`, file.Name()),
+		},
+		{
+			name: "no flags",
+			input: inputs{
+				flags:   []string{},
+				content: "one two three\nfour five six\n",
+			},
+			wants: fmt.Sprintf(`    2    6    28 %s
+    2    6    28 total
+`, file.Name()),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			args := append(tc.input.flags, file.Name())
+			cmd, err := getCommand(args...)
+			if err != nil {
+				t.Error("failed to get command:", err)
+			}
+
+			stdout := &bytes.Buffer{}
+			cmd.Stdout = stdout
+
+			if err := cmd.Run(); err != nil {
+				t.Error("failed to run command", err)
+			}
+
+			if got := stdout.String(); got != tc.wants {
+				t.Errorf("stdout is not correct:\ngot: %s\nwants: %s", got, tc.wants)
+			}
+
+		})
+	}
+}
