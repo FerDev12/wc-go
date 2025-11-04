@@ -13,7 +13,7 @@ import (
 )
 
 const TAB_WIDTH = 8
-const PADDING = 1
+const PADDING = 4
 const PAD_CHAR = ' '
 const TAB_FLAG = tabwriter.AlignRight
 
@@ -21,6 +21,7 @@ type FilesCountResult struct {
 	counts   counter.Counts
 	filename string
 	err      error
+	idx      int
 }
 
 func main() {
@@ -48,7 +49,13 @@ func main() {
 
 	ch := CountFiles(filenames)
 
+	results := make([]FilesCountResult, len(filenames))
+
 	for res := range ch {
+		results[res.idx] = res
+	}
+
+	for _, res := range results {
 		if res.err != nil {
 			didError = true
 			fmt.Fprintln(os.Stderr, "wc-go:", res.err)
@@ -78,7 +85,7 @@ func CountFiles(filenames []string) <-chan FilesCountResult {
 	wg := sync.WaitGroup{}
 	wg.Add(len(filenames))
 
-	for _, filename := range filenames {
+	for i, filename := range filenames {
 		go func() {
 			defer wg.Done()
 			counts, err := counter.CountFile(filename)
@@ -86,6 +93,7 @@ func CountFiles(filenames []string) <-chan FilesCountResult {
 				filename: filename,
 				counts:   counts,
 				err:      err,
+				idx:      i,
 			}
 		}()
 	}
