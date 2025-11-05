@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"bloom.io/github.com/FerDev12/wc-go/test/e2e/assert"
+	"bloom.io/github.com/FerDev12/wc-go/test/assert"
 )
 
 func TestMultiFile(t *testing.T) {

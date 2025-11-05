@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"bloom.io/github.com/FerDev12/wc-go/test/e2e/assert"
+	"bloom.io/github.com/FerDev12/wc-go/test/assert"
 )
 
 func TestStdin(t *testing.T) {

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"bloom.io/github.com/FerDev12/wc-go/display"
+	"bloom.io/github.com/FerDev12/wc-go/test/assert"
 )
 
 func TestPrintHeader(t *testing.T) {
@@ -107,9 +108,7 @@ func TestPrintHeader(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			buffer := bytes.Buffer{}
 			tc.input.options.PrintHeader(&buffer)
-			if buffer.String() != tc.wants {
-				t.Errorf("got: %v, wants: %v", buffer.Bytes(), []byte(tc.wants))
-			}
+			assert.Equal(t, tc.wants, buffer.String())
 		})
 	}
 }
