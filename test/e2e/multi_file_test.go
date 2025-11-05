@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"testing"
+
+	"bloom.io/github.com/FerDev12/wc-go/test/e2e/assert"
 )
 
 func TestMultiFile(t *testing.T) {
@@ -49,7 +51,7 @@ func TestMultiFile(t *testing.T) {
     3    8    37 total
 `, fileA.Name(), fileB.Name(), fileC.Name())
 
-	if want, got := wants, stdout.String(); want != got {
-		t.Errorf("unexpected output:\nwant:\n%s\ngot:\n%s", want, got)
-	}
+	got := stdout.String()
+
+	assert.Equal(t, wants, got)
 }

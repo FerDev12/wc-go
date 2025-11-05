@@ -6,6 +6,8 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	"bloom.io/github.com/FerDev12/wc-go/test/e2e/assert"
 )
 
 func TestStdin(t *testing.T) {
@@ -26,10 +28,7 @@ func TestStdin(t *testing.T) {
 
 	wants := "    1    3    14\n"
 	got := output.String()
-
-	if got != wants {
-		t.Errorf("stdout is not correct: got: %s, wants: %s", got, wants)
-	}
+	assert.Equal(t, wants, got, "stdout is not correct")
 }
 
 func TestSingleFile(t *testing.T) {
@@ -64,10 +63,7 @@ func TestSingleFile(t *testing.T) {
 
 	wants := fmt.Sprintf("    3    9    45 %s\n    3    9    45 total\n", file.Name())
 	got := output.String()
-
-	if got != wants {
-		t.Errorf("stdout is not correct: got: %s, wants: %s", got, wants)
-	}
+	assert.Equal(t, wants, got, "stdout is not correct")
 }
 
 func TestNonExistingFile(t *testing.T) {
@@ -98,17 +94,11 @@ func TestNonExistingFile(t *testing.T) {
 	gotStderr := stderr.String()
 	gotStdout := stdout.String()
 
-	if gotStderr != wantsStderr {
-		t.Errorf("stderr is not correct:\ngot: %s\nwants: %s", gotStderr, wantsStderr)
-	}
-
-	if gotStdout != wantsStdout {
-		t.Errorf("stdout is not correct:\ngot: %s\nwants: %s", gotStdout, wantsStdout)
-	}
+	assert.Equal(t, wantsStderr, gotStderr, "stderr is not correct")
+	assert.Equal(t, wantsStdout, gotStdout, "stdout is not correct")
 }
 
 func TestFlags(t *testing.T) {
-
 	dname, err := os.MkdirTemp("", "flags")
 	if err != nil {
 		t.Fatal("failed to create temp directory:", err)
@@ -227,10 +217,8 @@ func TestFlags(t *testing.T) {
 				t.Error("failed to run command", err)
 			}
 
-			if got := stdout.String(); got != tc.wants {
-				t.Errorf("stdout is not correct:\ngot: %s\nwants: %s", got, tc.wants)
-			}
-
+			got := stdout.String()
+			assert.Equal(t, tc.wants, got, "stdout is not correct")
 		})
 	}
 }

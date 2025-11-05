@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"bloom.io/github.com/FerDev12/wc-go/display"
+	"bloom.io/github.com/FerDev12/wc-go/test/e2e/assert"
 )
 
 func TestCountWords(t *testing.T) {
@@ -30,9 +31,7 @@ func TestCountWords(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			reader := strings.NewReader(tc.input)
 			got := GetCounts(reader).words
-			if got != tc.wants {
-				t.Errorf("got %d, wants %d", got, tc.wants)
-			}
+			assert.Equal(t, tc.wants, got)
 		})
 	}
 
@@ -56,9 +55,7 @@ func TestCountLines(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			r := strings.NewReader(tc.input)
 			got := GetCounts(r).lines
-			if got != tc.wants {
-				t.Errorf("Got %d, wants %d", got, tc.wants)
-			}
+			assert.Equal(t, tc.wants, got)
 		})
 	}
 }
@@ -82,9 +79,7 @@ func TestCountBytes(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			r := strings.NewReader(tc.input)
 			got := GetCounts(r).bytes
-			if got != tc.wants {
-				t.Errorf("Got %d, wants %d", got, tc.wants)
-			}
+			assert.Equal(t, tc.wants, got)
 		})
 	}
 }
@@ -169,9 +164,7 @@ func TestGetCounts(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			reader := strings.NewReader(tc.input)
 			got := GetCounts(reader)
-			if got != tc.wants {
-				t.Errorf("got: %v, wants: %v", got, tc.wants)
-			}
+			assert.Equal(t, tc.wants, got)
 		})
 	}
 }
@@ -245,9 +238,7 @@ func TestAddCounts(t *testing.T) {
 			for _, input := range tc.input {
 				totals = totals.Add(input)
 			}
-			if totals != tc.wants {
-				t.Errorf("got: %v wants: %v", totals, tc.wants)
-			}
+			assert.Equal(t, tc.wants, totals)
 		})
 	}
 }
@@ -406,9 +397,7 @@ func TestPrintCounts(t *testing.T) {
 			buffer := bytes.Buffer{}
 			tc.input.counts.Print(&buffer, tc.input.options, tc.input.filename...)
 			got := buffer.String()
-			if got != tc.wants {
-				t.Errorf("got: %v, wants: %v", buffer.Bytes(), []byte(tc.wants))
-			}
+			assert.Equal(t, tc.wants, got)
 		})
 	}
 }
