@@ -1,7 +1,6 @@
 package e2e
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"testing"
@@ -37,21 +36,17 @@ func TestMultiFile(t *testing.T) {
 		t.Fatal("failed to create command:", err)
 	}
 
-	stdout := &bytes.Buffer{}
-
-	cmd.Stdout = stdout
-
-	if err := cmd.Run(); err != nil {
+	stdout, err := cmd.Output()
+	if err != nil {
 		t.Fatal("failed to run command:", err)
 	}
 
+	got := string(stdout)
 	wants := fmt.Sprintf(`    1    5    24 %s
     2    3    13 %s
     0    0     0 %s
     3    8    37 total
 `, fileA.Name(), fileB.Name(), fileC.Name())
-
-	got := stdout.String()
 
 	assert.Equal(t, wants, got)
 }

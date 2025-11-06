@@ -17,17 +17,15 @@ func TestStdin(t *testing.T) {
 		t.Fatal("couldn't get working directory:", err)
 	}
 
-	output := &bytes.Buffer{}
-
 	cmd.Stdin = strings.NewReader("one two three\n")
-	cmd.Stdout = output
 
-	if err := cmd.Run(); err != nil {
+	output, err := cmd.Output()
+	if err != nil {
 		t.Fatal("failed to run command:", err)
 	}
 
 	wants := "    1    3    14\n"
-	got := output.String()
+	got := string(output)
 	assert.Equal(t, wants, got, "stdout is not correct")
 }
 
@@ -54,15 +52,13 @@ func TestSingleFile(t *testing.T) {
 		t.Fatal("couldn't get working directory:", err)
 	}
 
-	output := &bytes.Buffer{}
-	cmd.Stdout = output
-
-	if err = cmd.Run(); err != nil {
+	output, err := cmd.Output()
+	if err != nil {
 		t.Fatal("failed to run command:", err)
 	}
 
 	wants := fmt.Sprintf("    3    9    45 %s\n    3    9    45 total\n", file.Name())
-	got := output.String()
+	got := string(output)
 	assert.Equal(t, wants, got, "stdout is not correct")
 }
 
@@ -210,14 +206,12 @@ func TestFlags(t *testing.T) {
 				t.Error("failed to get command:", err)
 			}
 
-			stdout := &bytes.Buffer{}
-			cmd.Stdout = stdout
-
-			if err := cmd.Run(); err != nil {
+			stdout, err := cmd.Output()
+			if err != nil {
 				t.Error("failed to run command", err)
 			}
 
-			got := stdout.String()
+			got := string(stdout)
 			assert.Equal(t, tc.wants, got, "stdout is not correct")
 		})
 	}
