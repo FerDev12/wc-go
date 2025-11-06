@@ -2,7 +2,13 @@
 
 This is a simple word counter CLI app written in Go that replicates (with a few twitches) the functionality of the `wc` command in linux.
 
-### Display Options
+## Building the app
+
+```bash
+go build -o wc-go ./cmd
+```
+
+## Display Options
 
 - `--help`: Display help information.
 - `-l`: Count the number of lines in the input.
